@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "sale_smart_ai_app_be"
+version = "0.1.0"
+description = "FastAPI backend for To-Do app with PostgreSQL, Alembic, Poetry"
+authors = ["Your Name <your@email.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = {extras = ["standard"], version = "^0.115.13"}
+sqlalchemy = "^2.0.41"
+alembic = "^1.16.2"
+dotenv = "^0.9.9"
+typer = "^0.16.0"
+psycopg2-binary = "^2.9.10"
+requests = "^2.32.4"
+pandas = "^2.3.0"
+openpyxl = "^3.1.5"
+pyjwt = "^2.10.1"
+passlib = "^1.7.4"
+bcrypt = "^4.3.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
