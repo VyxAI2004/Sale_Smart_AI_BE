@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from sqlalchemy import String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from .attachment import Attachment
     from .comment import Comment
 
+
 class User(Base):
     """Model cho bảng users"""
     __tablename__ = "users"
@@ -22,8 +23,8 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     full_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    avatar_url: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    is_active: Mapped[bool | None] = mapped_column(Boolean, server_default='true', nullable=True)
+    avatar_url: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    is_active: Mapped[Optional[bool]] = mapped_column(Boolean, server_default="true", nullable=True)
     
     # Relationships
     roles: Mapped[list["UserRole"]] = relationship(
@@ -41,13 +42,13 @@ class User(Base):
     created_projects: Mapped[list["Project"]] = relationship(
         "Project", 
         back_populates="creator", 
-        foreign_keys="Project.created_by",
+        foreign_keys="[Project.created_by]",
         lazy="select"
     )
     assigned_projects: Mapped[list["Project"]] = relationship(
         "Project", 
         back_populates="assignee", 
-        foreign_keys="Project.assigned_to",
+        foreign_keys="[Project.assigned_to]",
         lazy="select"
     )
     project_memberships: Mapped[list["ProjectUser"]] = relationship(

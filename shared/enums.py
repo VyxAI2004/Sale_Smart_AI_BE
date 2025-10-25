@@ -78,9 +78,11 @@ class ProjectPermissionEnum(str, Enum):
 class ProjectStatusEnum(str, Enum):
     """Trạng thái của Project."""
     DRAFT = "draft"
-    ACTIVE = "active"
+    READY = "ready"
+    RUNNING = "running"
+    PAUSED = "paused"
     COMPLETED = "completed"
-    CANCELLED = "cancelled"
+    ARCHIVED = "archived"
 
 class PipelineTypeEnum(str, Enum):
     """Loại quy trình (pipeline) của Project."""

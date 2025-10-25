@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from sqlalchemy import String, Integer, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -15,13 +15,13 @@ class Attachment(Base):
     __tablename__ = "attachments"
     
     # Columns
-    project_id: Mapped[str | None] = mapped_column(PGUUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=True)
-    task_id: Mapped[str | None] = mapped_column(PGUUID(as_uuid=True), ForeignKey("tasks.id"), nullable=True)
+    project_id: Mapped[Optional[str]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=True)
+    task_id: Mapped[Optional[str]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("tasks.id"), nullable=True)
     filename: Mapped[str] = mapped_column(String(255), nullable=False)
     file_path: Mapped[str] = mapped_column(String(500), nullable=False)
-    file_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    file_size: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    uploaded_by: Mapped[str | None] = mapped_column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    file_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    file_size: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    uploaded_by: Mapped[Optional[str]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
     
     # Relationships
     project: Mapped["Project"] = relationship(

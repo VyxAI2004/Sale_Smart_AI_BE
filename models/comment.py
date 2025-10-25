@@ -1,5 +1,5 @@
-from typing import TYPE_CHECKING
-from sqlalchemy import String, Text, ForeignKey
+from typing import TYPE_CHECKING, Optional
+from sqlalchemy import Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -15,12 +15,12 @@ class Comment(Base):
     __tablename__ = "comments"
     
     # Columns
-    project_id: Mapped[str | None] = mapped_column(PGUUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=True)
-    task_id: Mapped[str | None] = mapped_column(PGUUID(as_uuid=True), ForeignKey("tasks.id"), nullable=True)
+    project_id: Mapped[Optional[str]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=True)
+    task_id: Mapped[Optional[str]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("tasks.id"), nullable=True)
     user_id: Mapped[str] = mapped_column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
-    parent_comment_id: Mapped[str | None] = mapped_column(PGUUID(as_uuid=True), ForeignKey("comments.id"), nullable=True)
-    
+    parent_comment_id: Mapped[Optional[str]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("comments.id"), nullable=True)
+
     # Relationships
     project: Mapped["Project"] = relationship(
         "Project", 

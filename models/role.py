@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from sqlalchemy import String, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -9,13 +9,14 @@ if TYPE_CHECKING:
     from .user import User
     from .project import ProjectUser
 
+
 class Role(Base):
     """Model cho bảng roles"""
     __tablename__ = "roles"
     
     # Columns
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
-    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     
     # Relationships
     users: Mapped[list["UserRole"]] = relationship(
@@ -36,13 +37,14 @@ class Role(Base):
         lazy="select"
     )
 
+
 class Permission(Base):
     """Model cho bảng permissions"""
     __tablename__ = "permissions"
     
     # Columns
     name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
-    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     
     # Relationships
     roles: Mapped[list["RolePermission"]] = relationship(
@@ -51,6 +53,7 @@ class Permission(Base):
         cascade="all, delete-orphan",
         lazy="select"
     )
+
 
 class UserRole(Base):
     """Junction table cho User-Role many-to-many relationship"""

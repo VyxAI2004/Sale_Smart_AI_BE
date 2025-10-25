@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from sqlalchemy import String, Boolean, DateTime, Integer, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -24,13 +24,13 @@ class AIModel(Base):
     model_type: Mapped[str] = mapped_column(String(50), nullable=False)  # llm, crawler, analyzer
     provider: Mapped[str] = mapped_column(String(50), nullable=False)  # openai, anthropic, gemini, custom
     model_name: Mapped[str] = mapped_column(String(100), nullable=False)  # gpt-4, claude-3, etc.
-    api_key: Mapped[str | None] = mapped_column(String(500), nullable=True)  # Encrypted API key
-    base_url: Mapped[str | None] = mapped_column(String(500), nullable=True)  # For custom endpoints
-    config: Mapped[dict | None] = mapped_column(JSONB, nullable=True)  # Model configuration
-    is_active: Mapped[bool | None] = mapped_column(Boolean, server_default='true', nullable=True)
-    last_used_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    usage_count: Mapped[int | None] = mapped_column(Integer, server_default='0', nullable=True)
-    
+    api_key: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)  # Encrypted API key
+    base_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)  # For custom endpoints
+    config: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)  # Model configuration
+    is_active: Mapped[Optional[bool]] = mapped_column(Boolean, server_default='true', nullable=True)
+    last_used_at: Mapped[Optional[DateTime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    usage_count: Mapped[Optional[int]] = mapped_column(Integer, server_default='0', nullable=True)
+
     # Relationships
     user: Mapped["User"] = relationship(
         "User", 

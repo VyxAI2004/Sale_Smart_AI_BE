@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from sqlalchemy import String, Text, Boolean, DateTime, Date, Numeric, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -17,41 +17,42 @@ if TYPE_CHECKING:
     from .attachment import Attachment
     from .comment import Comment
 
+
 class Project(Base):
     """Model cho bảng projects"""
     __tablename__ = "projects"
     
     # Columns
     name: Mapped[str] = mapped_column(String(200), nullable=False)
-    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     target_product_name: Mapped[str] = mapped_column(String(200), nullable=False)
-    target_product_category: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    target_budget_range: Mapped[Numeric | None] = mapped_column(Numeric(precision=15, scale=2), nullable=True)
-    currency: Mapped[str | None] = mapped_column(String(10), server_default='VND', nullable=True)
-    status: Mapped[str | None] = mapped_column(String(20), server_default='draft', nullable=True)
-    pipeline_type: Mapped[str | None] = mapped_column(String(50), server_default='standard', nullable=True)
-    crawl_schedule: Mapped[str | None] = mapped_column(String(50), nullable=True)  # daily, weekly, monthly, custom
-    next_crawl_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    created_by: Mapped[str | None] = mapped_column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
-    assigned_to: Mapped[str | None] = mapped_column(PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
-    assigned_model_id: Mapped[str | None] = mapped_column(PGUUID(as_uuid=True), ForeignKey("ai_models.id", ondelete="SET NULL"), nullable=True)  # Model LLM được assign
-    deadline: Mapped[Date | None] = mapped_column(Date, nullable=True)
-    completed_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    target_product_category: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    target_budget_range: Mapped[Optional[Numeric]] = mapped_column(Numeric(precision=15, scale=2), nullable=True)
+    currency: Mapped[Optional[str]] = mapped_column(String(10), server_default='VND', nullable=True)
+    status: Mapped[Optional[str]] = mapped_column(String(20), server_default='draft', nullable=True)
+    pipeline_type: Mapped[Optional[str]] = mapped_column(String(50), server_default='standard', nullable=True)
+    crawl_schedule: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # daily, weekly, monthly, custom
+    next_crawl_at: Mapped[Optional[DateTime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_by: Mapped[Optional[str]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    assigned_to: Mapped[Optional[str]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    assigned_model_id: Mapped[Optional[str]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("ai_models.id", ondelete="SET NULL"), nullable=True)
+    deadline: Mapped[Optional[Date]] = mapped_column(Date, nullable=True)
+    completed_at: Mapped[Optional[DateTime]] = mapped_column(DateTime(timezone=True), nullable=True)
     
     # Relationships
-    creator: Mapped["User"] = relationship(
+    creator: Mapped[Optional["User"]] = relationship(
         "User", 
         back_populates="created_projects", 
         foreign_keys=[created_by],
         lazy="select"
     )
-    assignee: Mapped["User"] = relationship(
+    assignee: Mapped[Optional["User"]] = relationship(
         "User", 
         back_populates="assigned_projects", 
         foreign_keys=[assigned_to],
         lazy="select"
     )
-    assigned_model: Mapped["AIModel"] = relationship(
+    assigned_model: Mapped[Optional["AIModel"]] = relationship(
         "AIModel", 
         back_populates="assigned_projects",
         lazy="select"
@@ -111,6 +112,7 @@ class Project(Base):
         lazy="select"
     )
 
+
 class ProjectUser(Base):
     """Model cho bảng project_users - phân quyền trong project"""
     __tablename__ = "project_users"
@@ -118,11 +120,11 @@ class ProjectUser(Base):
     # Columns
     project_id: Mapped[str] = mapped_column(PGUUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
     user_id: Mapped[str] = mapped_column(PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    role_id: Mapped[str | None] = mapped_column(PGUUID(as_uuid=True), ForeignKey("roles.id", ondelete="SET NULL"), nullable=True)
-    permissions: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
-    joined_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True), server_default='now()', nullable=True)
-    invited_by: Mapped[str | None] = mapped_column(PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
-    is_active: Mapped[bool | None] = mapped_column(Boolean, server_default='true', nullable=True)
+    role_id: Mapped[Optional[str]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("roles.id", ondelete="SET NULL"), nullable=True)
+    permissions: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
+    joined_at: Mapped[Optional[DateTime]] = mapped_column(DateTime(timezone=True), server_default='now()', nullable=True)
+    invited_by: Mapped[Optional[str]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    is_active: Mapped[Optional[bool]] = mapped_column(Boolean, server_default='true', nullable=True)
     
     # Relationships
     project: Mapped["Project"] = relationship(
@@ -130,18 +132,18 @@ class ProjectUser(Base):
         back_populates="members",
         lazy="select"
     )
-    user = relationship(
+    user: Mapped["User"] = relationship(
         "User",
         back_populates="project_memberships",
         foreign_keys=[user_id],  
         lazy="select"
     )
-    role: Mapped["Role"] = relationship(
+    role: Mapped[Optional["Role"]] = relationship(
         "Role", 
         back_populates="project_users",
         lazy="select"
     )
-    inviter = relationship(
+    inviter: Mapped[Optional["User"]] = relationship(
         "User",
         back_populates="invited_project_memberships",
         foreign_keys=[invited_by],

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from sqlalchemy import String, DateTime, Integer, Text, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID as PGUUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -18,16 +18,16 @@ class CrawlSession(Base):
     
     # Columns
     project_id: Mapped[str] = mapped_column(PGUUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
-    product_source_id: Mapped[str | None] = mapped_column(PGUUID(as_uuid=True), ForeignKey("product_sources.id", ondelete="CASCADE"), nullable=True)
-    assigned_model_id: Mapped[str | None] = mapped_column(PGUUID(as_uuid=True), ForeignKey("ai_models.id", ondelete="SET NULL"), nullable=True)
-    status: Mapped[str | None] = mapped_column(String(20), server_default='pending', nullable=True)  # pending, running, completed, failed
+    product_source_id: Mapped[Optional[str]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("product_sources.id", ondelete="CASCADE"), nullable=True)
+    assigned_model_id: Mapped[Optional[str]] = mapped_column(PGUUID(as_uuid=True), ForeignKey("ai_models.id", ondelete="SET NULL"), nullable=True)
+    status: Mapped[Optional[str]] = mapped_column(String(20), server_default='pending', nullable=True)  # pending, running, completed, failed
     crawl_type: Mapped[str] = mapped_column(String(20), nullable=False)  # initial, scheduled, manual
     url: Mapped[str] = mapped_column(String(500), nullable=False)
-    started_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    completed_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    products_collected: Mapped[int | None] = mapped_column(Integer, server_default='0', nullable=True)
-    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
-    crawl_stats: Mapped[dict | None] = mapped_column(JSONB, nullable=True)  # Thời gian, số request, etc.
+    started_at: Mapped[Optional[DateTime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    completed_at: Mapped[Optional[DateTime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    products_collected: Mapped[Optional[int]] = mapped_column(Integer, server_default='0', nullable=True)
+    error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    crawl_stats: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)  # Thời gian, số request, etc.
     
     # Relationships
     project: Mapped["Project"] = relationship(
