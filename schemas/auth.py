@@ -8,9 +8,10 @@ class TokenPayload(BaseModel):
     sub: UUID  # user id
     exp: datetime
     iat: Optional[datetime] = None
+    iss: Optional[str] = None
+    aud: Optional[str] = None
+    jti: Optional[str] = None
     roles: List[str] = []
-    global_permissions: List[str] = []
-    project_permissions: Dict[str, List[str]] = {}  # Dict[project_id, permissions]
 
 class Token(BaseModel):
     """Token response schema"""
@@ -24,9 +25,10 @@ class TokenData(BaseModel):
     user_id: UUID
     email: str
     roles: List[str] = []
-    global_permissions: List[str] = []
-    project_permissions: Dict[str, List[str]] = {}  # Dict[project_id, permissions]
     exp: datetime
+    iss: Optional[str] = None
+    aud: Optional[str] = None
+    jti: Optional[str] = None
 
 class LoginRequest(BaseModel):
     """Login request schema"""

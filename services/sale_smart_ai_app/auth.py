@@ -1,4 +1,4 @@
-from uuid import UUID
+from uuid import UUID, uuid4
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from fastapi.security import APIKeyHeader, OAuth2PasswordBearer
@@ -41,55 +41,28 @@ class AuthService(
     def get_password_hash(self, password):
         return pwd_context.hash(password)
 
-    def _get_user_permissions(self, user: User) -> tuple[list[str], dict[str, list[str]]]:
-        """Get user's global and project permissions."""
-        global_permissions = set()
-        project_permissions = {}
-
-        # Collect global permissions from user roles
-        if user.roles:
-            for user_role in user.roles:
-                if user_role.role and user_role.role.permissions:
-                    for role_perm in user_role.role.permissions:
-                        if role_perm.permission:
-                            global_permissions.add(role_perm.permission.name)
-
-        # Collect project permissions
-        if user.project_memberships:
-            for project_user in user.project_memberships:
-                project_perms = set()
-                
-                # Add permissions from project role
-                if project_user.role and project_user.role.permissions:
-                    for role_perm in project_user.role.permissions:
-                        if role_perm.permission:
-                            project_perms.add(role_perm.permission.name)
-                
-                # Add direct permissions if any
-                if project_user.permissions:
-                    project_perms.update(project_user.permissions)
-                
-                if project_perms:
-                    project_permissions[str(project_user.project_id)] = list(project_perms)
-
-        return list(global_permissions), project_permissions
-
     def _create_tokens(self, user: User, roles: list[str]) -> Token:
         now = datetime.now(timezone.utc)
         
-        # Get user permissions
-        global_permissions, project_permissions = self._get_user_permissions(user)
+        # Generate unique JTI for revocation support
+        # Generate unique JTI for revocation support
+        jti = str(uuid4())
+        
+        # Standard claims
+        iss = "sale-smart-ai"
+        aud = "sale-smart-ai-app"
 
         access_token = encode(
             {
                 "sub": str(user.id),
                 "email": user.email,
                 "roles": roles,
-                "global_permissions": global_permissions,
-                "project_permissions": project_permissions,
                 "iat": now,
                 "exp": now + timedelta(weeks=env.JWT_ACCESS_TOKEN_EXPIRE_WEEKS),
-                "type": "access"
+                "type": "access",
+                "iss": iss,
+                "aud": aud,
+                "jti": jti
             },
             JWT_SECRET_KEY,
             algorithm=JWT_ALGORITHM
@@ -100,7 +73,10 @@ class AuthService(
                 "sub": str(user.id),
                 "type": "refresh",
                 "iat": now,
-                "exp": now + timedelta(weeks=env.JWT_REFRESH_TOKEN_EXPIRE_WEEKS)
+                "exp": now + timedelta(weeks=env.JWT_REFRESH_TOKEN_EXPIRE_WEEKS),
+                "iss": iss,
+                "aud": aud,
+                "jti": jti
             },
             JWT_SECRET_KEY,
             algorithm=JWT_ALGORITHM
