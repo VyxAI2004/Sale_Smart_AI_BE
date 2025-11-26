@@ -1,4 +1,4 @@
-from uuid import UUID, uuid4
+from uuid import UUID
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from fastapi.security import APIKeyHeader, OAuth2PasswordBearer
@@ -13,6 +13,7 @@ from schemas.user import UserCreate, UserUpdate, UserUpdateInternal
 from repositories.user import UserRepository
 from .base import BaseService
 from schemas.auth import Token
+from .permission import PermissionService
 
 api_key_header = APIKeyHeader(name="Authorization")
 
@@ -44,25 +45,21 @@ class AuthService(
     def _create_tokens(self, user: User, roles: list[str]) -> Token:
         now = datetime.now(timezone.utc)
         
-        # Generate unique JTI for revocation support
-        # Generate unique JTI for revocation support
-        jti = str(uuid4())
-        
-        # Standard claims
-        iss = "sale-smart-ai"
-        aud = "sale-smart-ai-app"
+        # Get user permissions using PermissionService
+
+        perm_service = PermissionService(self.db)
+        global_permissions, project_permissions = perm_service.get_all_user_permissions(user.id)
 
         access_token = encode(
             {
                 "sub": str(user.id),
                 "email": user.email,
                 "roles": roles,
+                "global_permissions": global_permissions,
+                "project_permissions": project_permissions,
                 "iat": now,
                 "exp": now + timedelta(weeks=env.JWT_ACCESS_TOKEN_EXPIRE_WEEKS),
-                "type": "access",
-                "iss": iss,
-                "aud": aud,
-                "jti": jti
+                "type": "access"
             },
             JWT_SECRET_KEY,
             algorithm=JWT_ALGORITHM
@@ -73,10 +70,7 @@ class AuthService(
                 "sub": str(user.id),
                 "type": "refresh",
                 "iat": now,
-                "exp": now + timedelta(weeks=env.JWT_REFRESH_TOKEN_EXPIRE_WEEKS),
-                "iss": iss,
-                "aud": aud,
-                "jti": jti
+                "exp": now + timedelta(weeks=env.JWT_REFRESH_TOKEN_EXPIRE_WEEKS)
             },
             JWT_SECRET_KEY,
             algorithm=JWT_ALGORITHM
