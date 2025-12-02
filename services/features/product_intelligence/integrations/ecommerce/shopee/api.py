@@ -26,17 +26,13 @@ def search_shopee_products(keyword: str, limit: int = 20, min_price: float = Non
     if max_price is not None:
         params["price_max"] = int(max_price * 100000)
     
-    # Headers to mimic real browser
-    import urllib.parse
-    
-    # Headers to mimic Shopee Android App (often less strict)
     headers = {
-        "User-Agent": "Android app Shopee appver=29330 app_type=1",
-        "X-Shopee-Language": "vi",
-        "X-Shopee-Client-Timezone": "Asia/Ho_Chi_Minh",
-        # "Referer": f"https://shopee.vn/search?keyword={urllib.parse.quote(keyword)}", # Removed Referer as it can trigger checks
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Referer": f"https://shopee.vn/search?keyword={keyword.replace(' ', '%20')}",
         "Accept": "application/json",
-        "Content-Type": "application/json",
+        "Accept-Language": "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7",
+        "X-Requested-With": "XMLHttpRequest",
+        "X-API-Source": "pc",
     }
     
     try:
@@ -44,16 +40,14 @@ def search_shopee_products(keyword: str, limit: int = 20, min_price: float = Non
         response = requests.get(url, params=params, headers=headers, timeout=15)
         
         if response.status_code != 200:
-            logger.error(f"Shopee API returned status {response.status_code}: {response.text[:500]}")
+            logger.error(f"Shopee API returned status {response.status_code}: {response.text[:200]}")
             return []
         
         data = response.json()
         items = data.get("items", [])
         
         if not items:
-            logger.warning(f"No items found for keyword '{keyword}'. Response keys: {list(data.keys())}")
-            # Log a snippet of response to see if we are blocked
-            logger.warning(f"Response snippet: {str(data)[:500]}")
+            logger.warning(f"No items found for keyword '{keyword}'")
             return []
         
         products = []
