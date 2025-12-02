@@ -16,7 +16,7 @@ from schemas.user import (
     UserPromoteRequest,
 )
 from schemas.role import UserRoleCreate
-from services.sale_smart_ai_app.user import UserService
+from services.core.user import UserService
 from repositories.user import UserFilters
 from middlewares.permissions import check_global_permissions
 from shared.enums import GlobalPermissionEnum, RoleEnum
@@ -43,7 +43,7 @@ def get_my_permissions(
     db: Session = Depends(get_db),
 ):
     """Get current user's permissions"""
-    from services.sale_smart_ai_app.permission import PermissionService
+    from services.core.permission import PermissionService
     permission_service = PermissionService(db)
     return permission_service.get_user_permissions(user_id=user_from_token.user_id)
 
@@ -170,15 +170,7 @@ def promote_user_to_admin(
     token: TokenData = Depends(verify_token),
     db: Session = Depends(get_db),
 ):
-    """
-    Promote user to admin or super_admin role
-    
-    Requires:
-    1. Super Admin role (via JWT token)
-    2. Admin Secret Key (via X-Admin-Secret header)
-    
-    This is a highly privileged operation and should be used with caution.
-    """
+
     try:
         # 1. Validate Admin Secret Key
         if not settings.validate_admin_secret_key(x_admin_secret):
@@ -188,7 +180,7 @@ def promote_user_to_admin(
             )
         
         # 2. Check if requester is Super Admin
-        from services.sale_smart_ai_app.permission import PermissionService
+        from services.core.permission import PermissionService
         permission_service = PermissionService(db)
         user_permissions = permission_service.get_user_permissions(user_id=token.user_id)
         

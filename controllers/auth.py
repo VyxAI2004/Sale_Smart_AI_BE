@@ -7,8 +7,8 @@ from core.dependencies.services import get_auth_service
 from core.dependencies.auth import JWT_ALGORITHM, verify_token
 from core.dependencies.clerk import get_clerk_service
 from core.dependencies.db import get_db
-from services.sale_smart_ai_app.auth import JWT_SECRET_KEY, AuthService
-from services.sale_smart_ai_app.clerk import ClerkService
+from services.core.auth import JWT_SECRET_KEY, AuthService
+from services.core.clerk import ClerkService
 from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/auth", tags=["authentication"])

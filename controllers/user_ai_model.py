@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from core.dependencies.auth import verify_token
 from schemas.auth import TokenData
 from schemas.user_ai_model import UserAIModelCreate, UserAIModelUpdate, UserAIModelResponse
-from services.sale_smart_ai_app.user_ai_model import UserAIModelService
+from services.core.user_ai_model import UserAIModelService
 from core.dependencies.db import get_db
 
 router = APIRouter(prefix="/user-ai-models", tags=["user-ai-models"])

@@ -44,3 +44,7 @@ class UserAIModelService:
             "api_key": user_link.api_key,
             "user_config": user_link.config or {},
         }
+    
+    def get_user_active_model(self, user_id: UUID) -> Optional[UserAIModel]:
+        """Get the first active AI model configured by the user"""
+        return self.repository.get_user_active_model(user_id)

@@ -20,7 +20,7 @@ from schemas.project_user import (
     ProjectUserResponse
 )
 from shared.enums import ProjectStatusEnum
-from services.sale_smart_ai_app.project import ProjectService
+from services.core.project import ProjectService
 from repositories.project import ProjectFilters
 
 router = APIRouter(prefix="/projects", tags=["projects"])

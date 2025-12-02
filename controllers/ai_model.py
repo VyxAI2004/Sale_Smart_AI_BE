@@ -12,7 +12,7 @@ from schemas.ai_model import (
     AIModelCreate,
     AIModelUpdate,
 )
-from services.sale_smart_ai_app.ai_model import AIModelService
+from services.core.ai_model import AIModelService
 from repositories.ai_model import AIModelFilters
 from middlewares.permissions import check_global_permissions
 from shared.enums import GlobalPermissionEnum, RoleEnum

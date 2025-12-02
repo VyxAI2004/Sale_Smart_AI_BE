@@ -21,7 +21,7 @@ from schemas.role import (
     RolePermissionAssignRequest,
     RolePermissionRemoveRequest,
 )
-from services.sale_smart_ai_app.role import RoleService, PermissionService
+from services.core.role import RoleService, PermissionService
 from repositories.role import RoleFilters, PermissionFilters
 from middlewares.permissions import check_global_permissions
 from shared.enums import GlobalPermissionEnum
