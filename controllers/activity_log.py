@@ -10,7 +10,7 @@ from schemas.activity_log import (
     ActivityLogCreate,
     ActivityLogUpdate,
 )
-from services.sale_smart_ai_app.activity_log import ActivityLogService
+from services.core.activity_log import ActivityLogService
 from repositories.activity_log import ActivityLogFilters
 
 router = APIRouter(prefix="/activity-logs", tags=["activity-logs"])

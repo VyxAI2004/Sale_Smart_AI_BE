@@ -8,7 +8,7 @@ from core.dependencies.auth import verify_token
 from core.dependencies.db import get_db
 from schemas.auth import TokenData
 from shared.enums import RoleEnum, GlobalPermissionEnum, ProjectPermissionEnum
-from services.sale_smart_ai_app.permission import PermissionService
+from services.core.permission import PermissionService
 
 
 def check_global_permissions(*required_permissions: GlobalPermissionEnum):

@@ -9,7 +9,7 @@ from models.user import User
 from repositories.user import UserRepository
 from schemas.clerk import ClerkUserInfo
 from schemas.user import UserCreate
-from services.sale_smart_ai_app.auth import AuthService
+from services.core.auth import AuthService
 from shared.enums import RoleEnum
 
 

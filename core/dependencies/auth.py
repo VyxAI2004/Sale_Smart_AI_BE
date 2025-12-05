@@ -5,7 +5,7 @@ from jwt import decode
 from sqlalchemy.orm import Session
 
 from env import env
-from services.sale_smart_ai_app.user import UserService
+from services.core.user import UserService
 from schemas.auth import TokenData
 from core.dependencies.services import get_user_service
 from core.dependencies.db import get_db
