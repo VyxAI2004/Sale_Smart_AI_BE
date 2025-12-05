@@ -51,14 +51,6 @@ class ProductReview(Base):
     platform: String(50)                # shopee/lazada/tiki
     source_url: String(500)             # Link gốc của review
     
-    # Verification & Engagement
-    is_verified_purchase: Boolean       # Mua hàng xác thực
-    helpful_count: Integer              # Số lượt hữu ích
-    
-    # Media
-    images: JSONB                       # Ảnh đính kèm
-    # Format: ["url1", "url2", ...]
-    
     # Crawl Metadata
     crawled_at: DateTime                # Thời gian crawl
     crawl_session_id: UUID (FK)         # Session crawl này
