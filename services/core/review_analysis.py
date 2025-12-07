@@ -4,12 +4,14 @@ Xử lý logic nghiệp vụ liên quan đến phân tích reviews.
 """
 from typing import List, Optional
 from uuid import UUID
+from decimal import Decimal
 
 from sqlalchemy.orm import Session
 
-from models.product import ReviewAnalysis
+from models.product import ReviewAnalysis, ProductReview
 from repositories.review_analysis import ReviewAnalysisRepository
 from schemas.review_analysis import ReviewAnalysisCreate, ReviewAnalysisUpdate
+from services.ai.spam_detection_service import get_spam_detection_service
 
 from .base import BaseService
 
@@ -101,3 +103,67 @@ class ReviewAnalysisService(BaseService[ReviewAnalysis, ReviewAnalysisCreate, Re
     def has_analysis(self, review_id: UUID) -> bool:
         """Kiểm tra review đã có analysis chưa"""
         return self.repository.get_by_review(review_id) is not None
+    
+    def analyze_review(self, review_id: UUID) -> Optional[ReviewAnalysis]:
+        """
+        Phân tích một review với spam detection.
+        Chỉ dùng spam detection, sentiment sẽ được thêm sau.
+        """
+        from repositories.product_review import ProductReviewRepository
+        
+        # Get review
+        review_repo = ProductReviewRepository(ProductReview, self.db)
+        review = review_repo.get(review_id)
+        
+        if not review:
+            return None
+        
+        # Check if already analyzed
+        existing = self.get_by_review(review_id)
+        if existing:
+            return existing
+        
+        # Get spam detection service
+        spam_service = get_spam_detection_service()
+        
+        # Analyze spam
+        review_text = review.content or ""
+        spam_result = spam_service.predict(review_text)
+        
+        # Create analysis (sentiment defaults to neutral for now)
+        analysis_data = ReviewAnalysisCreate(
+            review_id=review_id,
+            sentiment_label="neutral",  # Will be added later
+            sentiment_score=Decimal("0.5"),
+            sentiment_confidence=Decimal("0.5"),
+            is_spam=spam_result["is_spam"],
+            spam_score=Decimal(str(spam_result["spam_score"])),
+            spam_confidence=Decimal(str(spam_result["spam_confidence"])),
+            spam_model_version=spam_result.get("model_version", "1.0"),
+            sentiment_model_version=None,  # Will be added later
+            analysis_metadata={
+                "spam_detection": spam_result,
+                "review_length": len(review_text),
+                "has_content": bool(review_text.strip())
+            }
+        )
+        
+        return self.create_analysis(analysis_data)
+    
+    def analyze_product_reviews(self, product_id: UUID) -> List[ReviewAnalysis]:
+        """
+        Phân tích tất cả reviews của một product.
+        Returns list of analyses created/updated.
+        """
+        from .product_review import ProductReviewService
+        
+        review_service = ProductReviewService(self.db)
+        unanalyzed = review_service.get_unanalyzed_reviews(product_id=product_id, limit=1000)
+        
+        analyses = []
+        for review in unanalyzed:
+            analysis = self.analyze_review(review.id)
+            if analysis:
+                analyses.append(analysis)
+        
+        return analyses

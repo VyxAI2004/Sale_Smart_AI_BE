@@ -74,3 +74,5 @@ class ProductReviewListResponse(BaseModel):
 def _rebuild_models():
     from .review_analysis import ReviewAnalysisResponse
     ProductReviewResponse.model_rebuild()
+
+_rebuild_models()

@@ -50,3 +50,7 @@ def get_review_analysis_service(db: Session = Depends(get_db)):
 def get_product_trust_score_service(db: Session = Depends(get_db)):
     from services.core.product_trust_score import ProductTrustScoreService
     return ProductTrustScoreService(db)
+
+def get_crawler_service(db: Session = Depends(get_db)):
+    from services.features.product_intelligence.crawler.crawler_service import CrawlerService
+    return CrawlerService(db)

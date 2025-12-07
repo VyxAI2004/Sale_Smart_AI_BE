@@ -252,3 +252,45 @@ def get_review_analysis(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Analysis not found for this review")
     
     return analysis
+
+
+@router.post("/analyze", status_code=status.HTTP_200_OK)
+def analyze_product_reviews(
+    product_id: UUID,
+    analysis_service: ReviewAnalysisService = Depends(get_review_analysis_service),
+    product_service: ProductService = Depends(get_product_service),
+    token: TokenData = Depends(verify_token),
+):
+    """
+    Phân tích tất cả reviews của một product với spam detection.
+    Sau đó tự động tính trust score.
+    """
+    # Verify product exists
+    product = product_service.get(product_id)
+    if not product:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
+    
+    try:
+        # Analyze all reviews
+        analyses = analysis_service.analyze_product_reviews(product_id)
+        
+        # Trigger trust score calculation
+        from services.core.product_trust_score import ProductTrustScoreService
+        from core.dependencies.services import get_product_trust_score_service
+        from core.dependencies.db import get_db
+        
+        db = next(get_db())
+        trust_score_service = ProductTrustScoreService(db)
+        trust_score = trust_score_service.calculate_trust_score(product_id)
+        
+        return {
+            "product_id": str(product_id),
+            "analyses_created": len(analyses),
+            "trust_score": float(trust_score.trust_score) if trust_score else None,
+            "message": f"Analyzed {len(analyses)} reviews and calculated trust score"
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error analyzing reviews: {str(e)}"
+        )

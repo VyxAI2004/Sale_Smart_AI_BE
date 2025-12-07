@@ -9,6 +9,7 @@ from .role import router as role_router
 from .permission import router as permission_router
 from .product import router as product_router
 from .product_ai import router as product_ai_router
+from .product_crawler import router as product_crawler_router
 # Trust Score Feature
 from .product_review import router as product_review_router
 from .review_analysis import router as review_analysis_router
@@ -27,6 +28,7 @@ api_router.include_router(role_router)
 api_router.include_router(permission_router)
 api_router.include_router(product_router)
 api_router.include_router(product_ai_router)
+api_router.include_router(product_crawler_router)
 # Trust Score Feature
 api_router.include_router(product_review_router)
 api_router.include_router(review_analysis_router)

@@ -9,19 +9,19 @@ Mở rộng hệ thống Product để tính toán **điểm tin cậy (Trust Sc
 
 ### Kiến trúc hệ thống
 ```
-LLM Search → Product URLs → BeautifulSoup Crawler → Product + Reviews
-                                                           ↓
-                                                    Save to Database
-                                                           ↓
-                                            AI Models Service (External)
-                                            ├─ Sentiment Analysis API
-                                            └─ Spam Detection API
-                                                           ↓
-                                                  Review Analysis Results
-                                                           ↓
-                                                Trust Score Calculation
-                                                           ↓
-                                                  Update Product Score
+LLM Search → Product filter → Product URLs → BeautifulSoup Crawler → Product + Reviews
+                                                                                     ↓
+                                                                             Save to Database
+                                                                                     ↓
+                                                                        AI Models Service (External)
+                                                                        ├─ Sentiment Analysis API
+                                                                        └─ Spam Detection API
+                                                                                     ↓
+                                                                        Review Analysis Results
+                                                                                     ↓
+                                                                        Trust Score Calculation
+                                                                                     ↓
+                                                                        Update Product Score
 ```
 
 ---

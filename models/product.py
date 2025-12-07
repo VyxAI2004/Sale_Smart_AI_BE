@@ -44,7 +44,7 @@ class Product(Base):
     average_rating: Mapped[Optional[Numeric]] = mapped_column(Numeric(precision=3, scale=2), nullable=True)
     review_count: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     sold_count: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
-    url: Mapped[str] = mapped_column(String(500), nullable=False)
+    url: Mapped[str] = mapped_column(Text, nullable=False)
     collected_at: Mapped[Optional[DateTime]] = mapped_column(DateTime(timezone=True), server_default='now()', nullable=True)
     is_verified: Mapped[Optional[bool]] = mapped_column(Boolean, server_default='false', nullable=True)
     data_source: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)

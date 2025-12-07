@@ -24,11 +24,11 @@ from .base import BaseService
 class ProductTrustScoreService(BaseService[ProductTrustScore, ProductTrustScoreCreate, ProductTrustScoreUpdate, ProductTrustScoreRepository]):
     """Service để quản lý ProductTrustScore"""
 
-    # Weights for trust score calculation
-    SENTIMENT_WEIGHT = 0.4
-    SPAM_WEIGHT = 0.3
-    VOLUME_WEIGHT = 0.2
-    VERIFICATION_WEIGHT = 0.1
+    # Weights for trust score calculation (spam only for now)
+    SPAM_WEIGHT = 0.5  # Increased since we only use spam
+    VOLUME_WEIGHT = 0.3
+    VERIFICATION_WEIGHT = 0.2
+    # SENTIMENT_WEIGHT = 0.0  # Will be added later
 
     def __init__(self, db: Session):
         super().__init__(db, ProductTrustScore, ProductTrustScoreRepository)
@@ -68,13 +68,13 @@ class ProductTrustScoreService(BaseService[ProductTrustScore, ProductTrustScoreC
     def calculate_trust_score(self, product_id: UUID) -> Optional[ProductTrustScore]:
         """
         Tính toán trust score cho một product dựa trên reviews và analyses.
+        Chỉ dùng spam detection, sentiment sẽ được thêm sau.
         
-        Formula:
+        Formula (spam only):
         Trust Score = (
-            sentiment_factor * 0.4 +
-            spam_factor * 0.3 +
-            volume_factor * 0.2 +
-            verification_factor * 0.1
+            spam_factor * 0.5 +
+            volume_factor * 0.3 +
+            verification_factor * 0.2
         ) * 100
         """
         from .product_review import ProductReviewService
@@ -93,24 +93,20 @@ class ProductTrustScoreService(BaseService[ProductTrustScore, ProductTrustScoreC
             # No reviews, cannot calculate
             return None
         
-        # 1. Sentiment Factor (0-1)
-        sentiment_factor = self._calculate_sentiment_factor(analysis_stats)
-        
-        # 2. Spam Factor (0-1) - Higher is better (less spam)
+        # 1. Spam Factor (0-1) - Higher is better (less spam)
         spam_factor = self._calculate_spam_factor(analysis_stats)
         
-        # 3. Volume Factor (0-1) - Logarithmic scale
+        # 2. Volume Factor (0-1) - Logarithmic scale
         volume_factor = self._calculate_volume_factor(total_reviews)
         
-        # 4. Verification Factor (0-1)
+        # 3. Verification Factor (0-1)
         verification_factor = self._calculate_verification_factor(
             review_stats["verified_purchases"],
             total_reviews
         )
         
-        # Calculate final trust score
+        # Calculate final trust score (spam only for now)
         trust_score = (
-            sentiment_factor * self.SENTIMENT_WEIGHT +
             spam_factor * self.SPAM_WEIGHT +
             volume_factor * self.VOLUME_WEIGHT +
             verification_factor * self.VERIFICATION_WEIGHT
@@ -130,17 +126,15 @@ class ProductTrustScoreService(BaseService[ProductTrustScore, ProductTrustScoreC
             positive_reviews_count=sentiment_counts.get("positive", 0),
             negative_reviews_count=sentiment_counts.get("negative", 0),
             neutral_reviews_count=sentiment_counts.get("neutral", 0),
-            average_sentiment_score=Decimal(str(analysis_stats["average_sentiment_score"])),
+            average_sentiment_score=Decimal(str(analysis_stats.get("average_sentiment_score", 0.5))),
             calculation_metadata={
-                "formula_version": "1.0",
+                "formula_version": "1.0-spam-only",
                 "weights": {
-                    "sentiment_factor": self.SENTIMENT_WEIGHT,
                     "spam_factor": self.SPAM_WEIGHT,
                     "volume_factor": self.VOLUME_WEIGHT,
                     "verification_factor": self.VERIFICATION_WEIGHT
                 },
                 "component_scores": {
-                    "sentiment_factor": round(sentiment_factor, 4),
                     "spam_factor": round(spam_factor, 4),
                     "volume_factor": round(volume_factor, 4),
                     "verification_factor": round(verification_factor, 4)
@@ -160,6 +154,7 @@ class ProductTrustScoreService(BaseService[ProductTrustScore, ProductTrustScoreC
         """
         Calculate sentiment component (0-1).
         Based on average sentiment score.
+        NOTE: Not used in current formula (spam only), but kept for future use.
         """
         avg_score = analysis_stats.get("average_sentiment_score", 0.5)
         return float(avg_score)
