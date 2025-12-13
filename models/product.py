@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from .crawl_session import CrawlSession
     from .task import Task
     from .ai_model import AIModel
+    from .product_market import ProductMarketAnalysis
 
 
 class Product(Base):
@@ -70,6 +71,9 @@ class Product(Base):
     )
     trust_score_detail: Mapped[Optional["ProductTrustScore"]] = relationship(
         "ProductTrustScore", back_populates="product", uselist=False, cascade="all, delete-orphan", lazy="select"
+    )
+    market_analysis: Mapped[Optional["ProductMarketAnalysis"]] = relationship(
+        "ProductMarketAnalysis", back_populates="product", uselist=False, cascade="all, delete-orphan", lazy="select"
     )
 
 

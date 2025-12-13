@@ -58,3 +58,20 @@ class GeminiAgent(BaseAgent):
         except Exception as e:
             logger.error(f"Gemini error: {e}")
             raise
+
+    def generate_stream(self, prompt: str, tools: Optional[list] = None, **kwargs):
+        config = types.GenerateContentConfig(
+            tools=tools
+        )
+        try:
+            stream = self.client.models.generate_content_stream(
+                model=self._model,
+                contents=prompt,
+                config=config
+            )
+            for chunk in stream:
+                 if chunk.text:
+                     yield chunk.text
+        except Exception as e:
+             logger.error(f"Gemini stream error: {e}")
+             yield f"[Error: {str(e)}]"

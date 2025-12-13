@@ -1,7 +1,3 @@
-"""
-Controller cho Product Reviews - API Endpoints.
-Quản lý CRUD và các operations liên quan đến reviews của products.
-"""
 from typing import Optional
 from uuid import UUID
 
@@ -28,10 +24,6 @@ from services.core.product import ProductService
 router = APIRouter(prefix="/products/{product_id}/reviews", tags=["Product Reviews"])
 
 
-# =============================================================================
-# PRODUCT REVIEWS CRUD
-# =============================================================================
-
 @router.get("/", response_model=ProductReviewListResponse)
 def get_product_reviews(
     product_id: UUID,
@@ -43,15 +35,7 @@ def get_product_reviews(
     product_service: ProductService = Depends(get_product_service),
     token: TokenData = Depends(verify_token),
 ):
-    """
-    Lấy danh sách reviews của một product.
-    
-    - **product_id**: ID của product
-    - **platform**: Lọc theo platform (shopee, lazada, tiki)
-    - **include_analysis**: Bao gồm kết quả phân tích AI
-    - **skip/limit**: Pagination
-    """
-    # Verify product exists
+
     product = product_service.get(product_id)
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
@@ -63,7 +47,7 @@ def get_product_reviews(
             skip=skip,
             limit=limit
         )
-        total = len(reviews)  # Simplified, could add count method
+        total = len(reviews)  
     else:
         reviews, total = review_service.get_product_reviews(
             product_id=product_id,
@@ -88,24 +72,11 @@ def get_review_statistics(
     product_service: ProductService = Depends(get_product_service),
     token: TokenData = Depends(verify_token),
 ):
-    """
-    Lấy thống kê reviews và phân tích của một product.
-    
-    Returns:
-    - Tổng số reviews, verified purchases
-    - Phân bố rating (1-5 stars)
-    - Phân bố sentiment (positive/negative/neutral)
-    - Spam statistics
-    """
-    # Verify product exists
     product = product_service.get(product_id)
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
-    
-    # Get review statistics
     review_stats = review_service.get_review_statistics(product_id)
-    
-    # Get analysis statistics
+
     analysis_stats = analysis_service.get_statistics(product_id)
     
     return {
@@ -123,10 +94,7 @@ def get_unanalyzed_reviews(
     product_service: ProductService = Depends(get_product_service),
     token: TokenData = Depends(verify_token),
 ):
-    """
-    Lấy danh sách reviews chưa được AI phân tích.
-    Dùng để biết còn bao nhiêu reviews cần phân tích.
-    """
+
     product = product_service.get(product_id)
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
@@ -147,7 +115,6 @@ def get_review_detail(
     review_service: ProductReviewService = Depends(get_product_review_service),
     token: TokenData = Depends(verify_token),
 ):
-    """Lấy chi tiết một review kèm analysis (nếu có)"""
     review = review_service.get_review_with_analysis(review_id)
     
     if not review:
@@ -167,16 +134,10 @@ def create_review(
     product_service: ProductService = Depends(get_product_service),
     token: TokenData = Depends(verify_token),
 ):
-    """
-    Tạo review mới cho product.
-    Thường được gọi từ crawler, không phải user trực tiếp.
-    """
-    # Verify product exists
     product = product_service.get(product_id)
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
     
-    # Ensure product_id matches
     if payload.product_id != product_id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, 
@@ -194,7 +155,6 @@ def update_review(
     review_service: ProductReviewService = Depends(get_product_review_service),
     token: TokenData = Depends(verify_token),
 ):
-    """Cập nhật thông tin review"""
     review = review_service.get(review_id)
     
     if not review:
@@ -214,7 +174,6 @@ def delete_review(
     review_service: ProductReviewService = Depends(get_product_review_service),
     token: TokenData = Depends(verify_token),
 ):
-    """Xóa một review"""
     review = review_service.get(review_id)
     
     if not review:
@@ -226,10 +185,6 @@ def delete_review(
     review_service.delete_review(review_id)
 
 
-# =============================================================================
-# REVIEW ANALYSIS ENDPOINTS
-# =============================================================================
-
 @router.get("/{review_id}/analysis", response_model=ReviewAnalysisResponse)
 def get_review_analysis(
     product_id: UUID,
@@ -238,8 +193,6 @@ def get_review_analysis(
     analysis_service: ReviewAnalysisService = Depends(get_review_analysis_service),
     token: TokenData = Depends(verify_token),
 ):
-    """Lấy kết quả phân tích AI của một review"""
-    # Verify review exists and belongs to product
     review = review_service.get(review_id)
     if not review:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Review not found")
@@ -261,20 +214,13 @@ def analyze_product_reviews(
     product_service: ProductService = Depends(get_product_service),
     token: TokenData = Depends(verify_token),
 ):
-    """
-    Phân tích tất cả reviews của một product với spam detection.
-    Sau đó tự động tính trust score.
-    """
-    # Verify product exists
     product = product_service.get(product_id)
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
     
     try:
-        # Analyze all reviews
         analyses = analysis_service.analyze_product_reviews(product_id)
         
-        # Trigger trust score calculation
         from services.core.product_trust_score import ProductTrustScoreService
         from core.dependencies.services import get_product_trust_score_service
         from core.dependencies.db import get_db

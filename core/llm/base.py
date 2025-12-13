@@ -24,3 +24,12 @@ class BaseAgent(ABC):
     def model_name(self) -> str:
         """Return the model name"""
         pass
+
+    def generate_stream(
+        self, 
+        prompt: str, 
+        tools: Optional[list] = None, 
+        **kwargs
+    ):
+        """Generate content stream (optional implementation)"""
+        raise NotImplementedError("Streaming not supported by this agent")

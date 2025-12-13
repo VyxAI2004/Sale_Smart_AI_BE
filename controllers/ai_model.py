@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID
 from typing import Optional
 
 
@@ -90,7 +90,7 @@ def get_list_ai_models(
 @router.get("/{ai_model_id}", response_model=AIModelResponse)
 def get_ai_model(
     *,
-    ai_model_id: uuid.UUID,
+    ai_model_id: UUID,
     ai_model_service: AIModelService = Depends(get_ai_model_service),
 ):
     ai_model = ai_model_service.get_ai_model(model_id=ai_model_id)
@@ -108,7 +108,7 @@ def get_ai_model(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_AI_MODELS)
 async def update_ai_model(
     *,
-    ai_model_id: uuid.UUID,
+    ai_model_id: UUID,
     payload: AIModelUpdate,
     ai_model_service: AIModelService = Depends(get_ai_model_service),
     token: TokenData = Depends(verify_token),
@@ -131,7 +131,7 @@ async def update_ai_model(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_AI_MODELS)
 async def deactivate_ai_model(
     *,
-    ai_model_id: uuid.UUID,
+    ai_model_id: UUID,
     ai_model_service: AIModelService = Depends(get_ai_model_service),
     token: TokenData = Depends(verify_token),
 ):
@@ -148,7 +148,7 @@ async def deactivate_ai_model(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_AI_MODELS)
 async def activate_ai_model(
     *,
-    ai_model_id: uuid.UUID,
+    ai_model_id: UUID,
     ai_model_service: AIModelService = Depends(get_ai_model_service),
     token: TokenData = Depends(verify_token),
 ):
@@ -164,7 +164,7 @@ async def activate_ai_model(
 @router.post("/{ai_model_id}/increment-usage", response_model=AIModelResponse)
 def increment_ai_model_usage(
     *,
-    ai_model_id: uuid.UUID,
+    ai_model_id: UUID,
     ai_model_service: AIModelService = Depends(get_ai_model_service),
     token: TokenData = Depends(verify_token),
 ):
@@ -183,7 +183,7 @@ def increment_ai_model_usage(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_AI_MODELS)
 async def delete_ai_model(
     *,
-    ai_model_id: uuid.UUID,
+    ai_model_id: UUID,
     ai_model_service: AIModelService = Depends(get_ai_model_service),
     token: TokenData = Depends(verify_token),
 ):

@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from core.dependencies.auth import verify_token
 from schemas.auth import TokenData
@@ -29,7 +29,7 @@ def create_or_update_user_ai_model(
 
 @router.delete("/{ai_model_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user_ai_model(
-    ai_model_id: uuid.UUID,
+    ai_model_id: UUID,
     db = Depends(get_db),
     user_from_token: TokenData = Depends(verify_token),
 ):

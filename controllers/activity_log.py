@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -35,9 +35,9 @@ def get_activity_logs(
     *,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
-    user_id: Optional[uuid.UUID] = Query(None),
+    user_id: Optional[UUID] = Query(None),
     action: Optional[str] = Query(None),
-    target_id: Optional[uuid.UUID] = Query(None),
+    target_id: Optional[UUID] = Query(None),
     target_type: Optional[str] = Query(None),
     activity_log_service: ActivityLogService = Depends(get_activity_log_service),
 ):
@@ -62,7 +62,7 @@ def get_activity_logs(
 @router.get("/{log_id}", response_model=ActivityLogResponse)
 def get_activity_log(
     *,
-    log_id: uuid.UUID,
+    log_id: UUID,
     activity_log_service: ActivityLogService = Depends(get_activity_log_service),
 ):
     """Lấy chi tiết 1 log"""
@@ -74,7 +74,7 @@ def get_activity_log(
 
 @router.get("/users/{user_id}", response_model=ListActivityLogsResponse)
 def get_by_user(
-    user_id: uuid.UUID,
+    user_id: UUID,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
     activity_log_service: ActivityLogService = Depends(get_activity_log_service),

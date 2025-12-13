@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID
 from typing import Optional, List
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -55,8 +55,8 @@ def get_list_projects(
     q: Optional[str] = Query(None, description="Search in name, description, target product"),
     name: Optional[str] = Query(None, description="Filter by project name"),
     project_status: Optional[ProjectStatusEnum] = Query(None, description="Filter by project status", alias="status"),
-    created_by: Optional[uuid.UUID] = Query(None, description="Filter by creator"),
-    assigned_to: Optional[uuid.UUID] = Query(None, description="Filter by assignee"),
+    created_by: Optional[UUID] = Query(None, description="Filter by creator"),
+    assigned_to: Optional[UUID] = Query(None, description="Filter by assignee"),
     pipeline_type: Optional[str] = Query(None, description="Filter by pipeline type"),
     target_product_category: Optional[str] = Query(None, description="Filter by target product category"),
     project_service: ProjectService = Depends(get_project_service),
@@ -133,7 +133,7 @@ def get_my_projects(
 @router.get("/{project_id}", response_model=ProjectResponse)
 def get_project(
     *,
-    project_id: uuid.UUID,
+    project_id: UUID,
     project_service: ProjectService = Depends(get_project_service),
     user_from_token: TokenData = Depends(verify_token),
 ):
@@ -147,7 +147,7 @@ def get_project(
 @router.patch("/{project_id}", response_model=ProjectResponse)
 def update_project(
     *,
-    project_id: uuid.UUID,
+    project_id: UUID,
     payload: ProjectUpdate,
     project_service: ProjectService = Depends(get_project_service),
     user_from_token: TokenData = Depends(verify_token),
@@ -169,7 +169,7 @@ def update_project(
 @router.put("/{project_id}", response_model=ProjectResponse)
 def replace_project(
     *,
-    project_id: uuid.UUID,
+    project_id: UUID,
     payload: ProjectUpdate,
     project_service: ProjectService = Depends(get_project_service),
     user_from_token: TokenData = Depends(verify_token),
@@ -191,7 +191,7 @@ def replace_project(
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_project(
     *,
-    project_id: uuid.UUID,
+    project_id: UUID,
     project_service: ProjectService = Depends(get_project_service),
     user_from_token: TokenData = Depends(verify_token),
 ):
@@ -212,7 +212,7 @@ def delete_project(
 @router.post("/{project_id}/assign", response_model=ProjectResponse)
 def assign_project(
     *,
-    project_id: uuid.UUID,
+    project_id: UUID,
     request: ProjectAssignRequest,
     project_service: ProjectService = Depends(get_project_service),
     user_from_token: TokenData = Depends(verify_token),
@@ -234,7 +234,7 @@ def assign_project(
 @router.post("/{project_id}/members", response_model=ProjectResponse)
 def assign_multiple_users_to_project(
     *,
-    project_id: uuid.UUID,
+    project_id: UUID,
     request: ProjectMemberAssignRequest,
     project_service: ProjectService = Depends(get_project_service),
     user_from_token: TokenData = Depends(verify_token),
@@ -256,7 +256,7 @@ def assign_multiple_users_to_project(
 @router.delete("/{project_id}/members", response_model=ProjectResponse)
 def remove_users_from_project(
     *,
-    project_id: uuid.UUID,
+    project_id: UUID,
     request: ProjectMemberRemoveRequest,
     project_service: ProjectService = Depends(get_project_service),
     user_from_token: TokenData = Depends(verify_token),
@@ -278,7 +278,7 @@ def remove_users_from_project(
 @router.get("/{project_id}/members", response_model=List[ProjectUserResponse])
 def get_project_members(
     *,
-    project_id: uuid.UUID,
+    project_id: UUID,
     project_service: ProjectService = Depends(get_project_service),
     user_from_token: TokenData = Depends(verify_token),
 ):
@@ -293,7 +293,7 @@ def get_project_members(
 @router.post("/{project_id}/status", response_model=ProjectResponse)
 def update_project_status(
     *,
-    project_id: uuid.UUID,
+    project_id: UUID,
     request: ProjectStatusUpdateRequest,
     project_service: ProjectService = Depends(get_project_service),
     user_from_token: TokenData = Depends(verify_token),

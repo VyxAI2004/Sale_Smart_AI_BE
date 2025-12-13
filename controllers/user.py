@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID
 from typing import Optional, List
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status, Header
@@ -80,7 +80,7 @@ def get_list_users(
 @router.get("/{user_id}", response_model=UserResponse)
 def get_user(
     *,
-    user_id: uuid.UUID,
+    user_id: UUID,
     user_service: UserService = Depends(get_user_service),
     user_from_token: TokenData = Depends(verify_token),
 ):
@@ -92,7 +92,7 @@ def get_user(
 @router.patch("/{user_id}", response_model=UserResponse)
 def update_user(
     *,
-    user_id: uuid.UUID,
+    user_id: UUID,
     payload: UserUpdate,
     user_service: UserService = Depends(get_user_service),
     user_from_token: TokenData = Depends(verify_token),
@@ -105,7 +105,7 @@ def update_user(
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(
     *,
-    user_id: uuid.UUID,
+    user_id: UUID,
     user_service: UserService = Depends(get_user_service),
     user_from_token: TokenData = Depends(verify_token),
 ):
@@ -122,8 +122,8 @@ def delete_user(
 @check_global_permissions(GlobalPermissionEnum.ASSIGN_ROLES)
 def assign_role_to_user(
     *,
-    user_id: uuid.UUID,
-    role_id: uuid.UUID,
+    user_id: UUID,
+    role_id: UUID,
     user_service: UserService = Depends(get_user_service),
     token: TokenData = Depends(verify_token),
 ):
@@ -143,8 +143,8 @@ def assign_role_to_user(
 @check_global_permissions(GlobalPermissionEnum.ASSIGN_ROLES)
 def remove_role_from_user(
     *,
-    user_id: uuid.UUID,
-    role_id: uuid.UUID,
+    user_id: UUID,
+    role_id: UUID,
     user_service: UserService = Depends(get_user_service),
     token: TokenData = Depends(verify_token),
 ):
@@ -163,7 +163,7 @@ def remove_role_from_user(
 @router.post("/{user_id}/promote", response_model=UserResponse)
 def promote_user_to_admin(
     *,
-    user_id: uuid.UUID,
+    user_id: UUID,
     payload: UserPromoteRequest,
     x_admin_secret: str = Header(..., alias="X-Admin-Secret"),
     user_service: UserService = Depends(get_user_service),

@@ -46,6 +46,29 @@ class ProductService(BaseService[Product, ProductCreate, ProductUpdate, ProductR
             else:
                 payload.platform = "other"
 
+        # Auto-fill info from URL if missing
+        if payload.url and (payload.current_price == 0 or not payload.images or payload.name == "string"):
+            try:
+                from services.features.product_intelligence.crawler.scraper_factory import ScraperFactory
+                scraper = ScraperFactory.get_scraper(payload.platform)
+                if scraper:
+                    detail = scraper.crawl_product_details(payload.url)
+                    if detail:
+                        if detail.name_text and (not payload.name or payload.name == "string"):
+                            payload.name = detail.name_text
+                        if detail.price:
+                            payload.current_price = detail.price
+                        if detail.images:
+                            payload.images = {"urls": detail.images}
+                        if detail.description:
+                            payload.features = detail.description
+                            # Also specifications if available?
+                        
+                        # Set collected_at implicitly? Default is null.
+            except Exception as e:
+                # Just log and continue, don't block creation
+                print(f"Warning: Failed to auto-crawl product details: {e}")
+
         # Ensure current_price is set
         if payload.current_price is None:
             payload.current_price = 0.0

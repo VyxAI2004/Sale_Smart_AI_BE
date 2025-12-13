@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -87,7 +87,7 @@ def list_permissions(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_ROLES)
 def get_permission(
     *,
-    permission_id: uuid.UUID,
+    permission_id: UUID,
     permission_service: PermissionService = Depends(get_permission_service),
     token: TokenData = Depends(verify_token),
 ):
@@ -103,7 +103,7 @@ def get_permission(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_ROLES)
 def update_permission(
     *,
-    permission_id: uuid.UUID,
+    permission_id: UUID,
     payload: PermissionUpdate,
     permission_service: PermissionService = Depends(get_permission_service),
     token: TokenData = Depends(verify_token),
@@ -127,7 +127,7 @@ def update_permission(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_ROLES)
 def delete_permission(
     *,
-    permission_id: uuid.UUID,
+    permission_id: UUID,
     permission_service: PermissionService = Depends(get_permission_service),
     token: TokenData = Depends(verify_token),
 ):
@@ -155,7 +155,7 @@ def delete_permission(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_ROLES)
 def activate_permission(
     *,
-    permission_id: uuid.UUID,
+    permission_id: UUID,
     permission_service: PermissionService = Depends(get_permission_service),
     token: TokenData = Depends(verify_token),
 ):
@@ -174,7 +174,7 @@ def activate_permission(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_ROLES)
 def deactivate_permission(
     *,
-    permission_id: uuid.UUID,
+    permission_id: UUID,
     permission_service: PermissionService = Depends(get_permission_service),
     token: TokenData = Depends(verify_token),
 ):

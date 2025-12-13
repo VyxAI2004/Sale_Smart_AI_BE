@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -94,7 +94,7 @@ def list_roles(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_ROLES)
 def get_role(
     *,
-    role_id: uuid.UUID,
+    role_id: UUID,
     role_service: RoleService = Depends(get_role_service),
     token: TokenData = Depends(verify_token),
 ):
@@ -110,7 +110,7 @@ def get_role(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_ROLES)
 def update_role(
     *,
-    role_id: uuid.UUID,
+    role_id: UUID,
     payload: RoleUpdate,
     role_service: RoleService = Depends(get_role_service),
     token: TokenData = Depends(verify_token),
@@ -132,7 +132,7 @@ def update_role(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_ROLES)
 def delete_role(
     *,
-    role_id: uuid.UUID,
+    role_id: UUID,
     role_service: RoleService = Depends(get_role_service),
     token: TokenData = Depends(verify_token),
 ):
@@ -151,7 +151,7 @@ def delete_role(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_ROLES)
 def activate_role(
     *,
-    role_id: uuid.UUID,
+    role_id: UUID,
     role_service: RoleService = Depends(get_role_service),
     token: TokenData = Depends(verify_token),
 ):
@@ -170,7 +170,7 @@ def activate_role(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_ROLES)
 def deactivate_role(
     *,
-    role_id: uuid.UUID,
+    role_id: UUID,
     role_service: RoleService = Depends(get_role_service),
     token: TokenData = Depends(verify_token),
 ):
@@ -191,7 +191,7 @@ def deactivate_role(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_ROLES)
 def assign_permissions_to_role(
     *,
-    role_id: uuid.UUID,
+    role_id: UUID,
     payload: RolePermissionAssignRequest,
     role_service: RoleService = Depends(get_role_service),
     token: TokenData = Depends(verify_token),
@@ -211,7 +211,7 @@ def assign_permissions_to_role(
 @check_global_permissions(GlobalPermissionEnum.MANAGE_ROLES)
 def remove_permissions_from_role(
     *,
-    role_id: uuid.UUID,
+    role_id: UUID,
     payload: RolePermissionRemoveRequest,
     role_service: RoleService = Depends(get_role_service),
     token: TokenData = Depends(verify_token),

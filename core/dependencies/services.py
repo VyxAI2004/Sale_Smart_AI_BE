@@ -54,3 +54,12 @@ def get_product_trust_score_service(db: Session = Depends(get_db)):
 def get_crawler_service(db: Session = Depends(get_db)):
     from services.features.product_intelligence.crawler.crawler_service import CrawlerService
     return CrawlerService(db)
+
+def get_product_market_service(db: Session = Depends(get_db)):
+    from services.features.product_intelligence.ai.product_market_service import ProductMarketAnalysisService
+    return ProductMarketAnalysisService(db)
+
+def get_assistant_service(db: Session = Depends(get_db)):
+    from services.features.product_intelligence.ai.assistant_service import AssistantService
+    return AssistantService(db)
+
