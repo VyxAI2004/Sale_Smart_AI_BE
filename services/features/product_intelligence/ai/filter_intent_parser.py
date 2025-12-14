@@ -57,7 +57,23 @@ Lưu ý:
 - Chỉ trả về các trường có trong input, không tự thêm
 - Nếu không có thông tin, để null
 - Giá tiền: chuyển đổi sang VND (ví dụ: 500k = 500000)
-- Rating: chuyển đổi sang số thập phân (ví dụ: "4.5 trở lên" = min_rating: 4.5)
+- Rating: 
+  * "rating trên 4.0" hoặc "rating 4.0 trở lên" → min_rating: 4.0 (>= 4.0)
+  * "rating dưới 4.5" → max_rating: 4.5 (<= 4.5)
+  * Chuyển đổi sang số thập phân (ví dụ: "4.5 trở lên" = min_rating: 4.5)
+- Giá:
+  * "giá trên 100000" hoặc "giá từ 100k" → min_price: 100000 (>= 100000)
+  * "giá dưới 500000" hoặc "giá tối đa 500k" → max_price: 500000 (<= 500000)
+- Review count (ĐÁNH GIÁ/REVIEW):
+  * "hơn 100 reviews" hoặc "100+ reviews" hoặc "có nhiều đánh giá" → min_review_count: 100 (>= 100)
+  * "dưới 1000 reviews" → max_review_count: 1000 (<= 1000)
+  * Từ khóa: "review", "đánh giá", "rating", "sao"
+  
+- Sales count (LƯỢT MUA/ĐÃ BÁN):
+  * "hơn 100 lượt mua" hoặc "100+ lượt mua" hoặc "đã bán 100+" → min_sales_count: 100 (>= 100)
+  * "hơn 100 đã bán" hoặc "100+ đã bán" → min_sales_count: 100 (>= 100)
+  * Từ khóa: "lượt mua", "đã bán", "sold", "sales"
+  * **QUAN TRỌNG**: Phân biệt rõ "lượt mua" (sales_count) và "review" (review_count) - đây là 2 khái niệm KHÁC NHAU
 
 Trả về JSON format:
 {{

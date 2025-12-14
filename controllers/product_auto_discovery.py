@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
+import json
 
 from core.dependencies.db import get_db
 from core.dependencies.auth import verify_token
@@ -7,6 +9,7 @@ from core.dependencies.services import get_project_service
 from schemas.auth import TokenData
 from schemas.auto_discovery import AutoDiscoveryRequest, AutoDiscoveryRequestLegacy, AutoDiscoveryResponse
 from services.features.product_intelligence.orchestration.auto_discovery_service import AutoDiscoveryService
+from services.features.product_intelligence.orchestration.auto_discovery_streaming_service import AutoDiscoveryStreamingService
 from services.core.project import ProjectService
 
 router = APIRouter(prefix="/products/auto-discovery", tags=["Auto Discovery"])
@@ -93,4 +96,66 @@ def execute_auto_discovery_legacy(
         )
     
     return AutoDiscoveryResponse(**result)
+
+
+@router.post("/execute-stream")
+async def execute_auto_discovery_stream(
+    request: AutoDiscoveryRequest,
+    token: TokenData = Depends(verify_token),
+    db: Session = Depends(get_db)
+):
+    """
+    Execute automated product discovery with Server-Sent Events (SSE) streaming
+    
+    Returns real-time events showing progress of each step:
+    - step_start: Step begins
+    - ai_thinking: AI is processing/thinking
+    - step_progress: Progress update within a step
+    - step_complete: Step completed
+    - step_error: Error occurred
+    - final_result: Final result with AI analysis
+    
+    **Response Format:** text/event-stream (SSE)
+    
+    **Example Event:**
+    ```
+    data: {"type": "step_start", "step": "0", "step_name": "Phân tích yêu cầu", "message": "Đang phân tích yêu cầu của bạn..."}
+    
+    data: {"type": "ai_thinking", "step": "0", "message": "Đang hiểu ý định của bạn..."}
+    
+    data: {"type": "final_result", "message": "Hoàn thành!", "data": {...}}
+    
+    data: [DONE]
+    ```
+    """
+    
+    streaming_service = AutoDiscoveryStreamingService(db)
+    
+    async def event_generator():
+        try:
+            async for event in streaming_service.execute_auto_discovery_stream(
+                project_id=request.project_id,
+                user_id=token.user_id,
+                user_input=request.user_input
+            ):
+                yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+        except Exception as e:
+            error_event = {
+                "type": "error",
+                "message": f"Lỗi: {str(e)}",
+                "timestamp": None
+            }
+            yield f"data: {json.dumps(error_event, ensure_ascii=False)}\n\n"
+        finally:
+            yield "data: [DONE]\n\n"
+    
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"
+        }
+    )
 

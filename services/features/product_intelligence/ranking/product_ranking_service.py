@@ -13,6 +13,7 @@ class ProductRankingService:
     
     def __init__(self, llm_agent: BaseAgent):
         self.llm = llm_agent
+        self._last_ranking_analysis = None
     
     def rank_and_select_products(
         self,
@@ -165,12 +166,18 @@ Hãy đánh giá và chọn TOP {limit} sản phẩm dựa trên:
 
 Trả về JSON format:
 {{
-    "analysis": "Phân tích ngắn gọn về các sản phẩm được chọn và lý do",
+    "analysis": "Phân tích CHI TIẾT về các sản phẩm được chọn và KHÔNG được chọn. Bao gồm:\n1. Tại sao chọn từng sản phẩm (ưu điểm cụ thể: rating, reviews, giá, sales, trust score)\n2. Tại sao KHÔNG chọn các sản phẩm còn lại (nhược điểm cụ thể: rating thấp, ít reviews, giá cao, thiếu trust, etc.)\n\nFormat:\n**Sản phẩm được chọn:**\n1. [Tên sản phẩm]: [Lý do chi tiết]\n2. [Tên sản phẩm]: [Lý do chi tiết]\n\n**Lý do không chọn các sản phẩm khác:**\n- [Tên sản phẩm]: [Lý do cụ thể - rating thấp, ít reviews, giá cao, etc.]",
     "top_products": [
         {{
             "product_name": "Tên sản phẩm chính xác từ danh sách",
             "product_url": "URL chính xác từ danh sách",
             "reason": "Lý do chọn sản phẩm này"
+        }}
+    ],
+    "rejected_products": [
+        {{
+            "product_name": "Tên sản phẩm không được chọn",
+            "reason": "Lý do không chọn (rating thấp, ít reviews, giá cao, etc.)"
         }}
     ]
 }}
@@ -179,6 +186,8 @@ Lưu ý:
 - Chỉ chọn sản phẩm từ danh sách trên, không tự thêm
 - product_name và product_url phải CHÍNH XÁC khớp với danh sách
 - Ưu tiên chất lượng và độ tin cậy hơn giá rẻ
+- Phân tích phải CHI TIẾT và CỤ THỂ, không chung chung
+- Liệt kê TẤT CẢ các sản phẩm không được chọn và lý do cụ thể
 """
         
         return prompt

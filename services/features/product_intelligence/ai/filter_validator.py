@@ -38,13 +38,28 @@ Criteria đã trích xuất:
 
 Nhiệm vụ: Kiểm tra xem criteria có phản ánh đúng yêu cầu của người dùng không.
 
+**QUAN TRỌNG - Các cách hiểu hợp lý:**
+- "rating trên 4.0" hoặc "rating 4.0 trở lên" → min_rating: 4.0 (>= 4.0) là HỢP LÝ
+- "giá dưới 120,000" hoặc "giá tối đa 120k" → max_price: 120000 (<= 120000) là HỢP LÝ
+- "hơn 100 reviews" hoặc "100+ reviews" → min_review_count: 100 (>= 100) là HỢP LÝ
+- Trong ngữ cảnh thực tế, người dùng thường dùng "trên X" để chỉ ">= X" và "dưới X" để chỉ "<= X"
+- CHỈ reject nếu criteria THIẾU thông tin quan trọng hoặc SAI hoàn toàn, KHÔNG reject vì khác biệt nhỏ về cách hiểu
+
 Trả về JSON:
 {{
     "is_valid": true/false,
     "reason": "Lý do nếu không hợp lệ"
 }}
 
-Nếu criteria không đúng hoặc thiếu thông tin quan trọng, trả về is_valid: false và giải thích lý do.
+**Chỉ trả về is_valid: false nếu:**
+- Criteria thiếu thông tin quan trọng mà user đã yêu cầu rõ ràng
+- Criteria có giá trị sai hoàn toàn (ví dụ: min_rating > max_rating)
+- Criteria không phản ánh ý định của user (ví dụ: user yêu cầu lazada nhưng criteria không có lazada)
+
+**KHÔNG reject vì:**
+- "trên X" được hiểu là ">= X" (đây là cách hiểu hợp lý)
+- "dưới X" được hiểu là "<= X" (đây là cách hiểu hợp lý)
+- Khác biệt nhỏ về cách diễn đạt nhưng ý nghĩa tương đương
 """
         
         try:

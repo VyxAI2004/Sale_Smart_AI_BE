@@ -84,7 +84,9 @@ Hãy trích xuất:
 
 2. **filter_criteria**: Tiêu chí lọc sản phẩm (nếu có)
    - Rating: "rating 4.5+", "đánh giá trên 4.5"
-   - Reviews: "hơn 100 reviews", "review 100+", "có nhiều đánh giá"
+   - Reviews (ĐÁNH GIÁ): "hơn 100 reviews", "review 100+", "có nhiều đánh giá"
+   - Lượt mua (SALES): "hơn 100 lượt mua", "100+ lượt mua", "đã bán 100+"
+     * **QUAN TRỌNG**: Phân biệt rõ "lượt mua" (sales) và "review" (đánh giá) - đây là 2 khái niệm KHÁC NHAU
    - Platform: "lazada", "tiki", "shopee" (lưu ý: shopee chưa hỗ trợ)
    - Mall: "mall", "cửa hàng chính hãng"
    - Price: "max price 500000", "giá dưới 500k"
