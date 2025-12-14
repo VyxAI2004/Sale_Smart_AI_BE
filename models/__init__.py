@@ -18,6 +18,7 @@ from .product import (
 )
 from .attachment import Attachment
 from .comment import Comment
+from .user_ai_model import UserAIModel
 
 __all__ = [
     # Base
@@ -29,6 +30,7 @@ __all__ = [
     "Permission", 
     "UserRole",
     "RolePermission",
+    "UserAIModel",
     
     # AI Models
     "AIModel",
