@@ -2,6 +2,7 @@ from typing import Type, Optional, List
 from sqlalchemy.orm import Session
 from models.user_ai_model import UserAIModel
 from schemas.user_ai_model import UserAIModelCreate, UserAIModelUpdate
+from models.ai_model import AIModel
 from uuid import UUID
 
 class UserAIModelRepository:
@@ -31,3 +32,13 @@ class UserAIModelRepository:
 
     def get_all_by_user(self, user_id: UUID) -> List[UserAIModel]:
         return self.db.query(UserAIModel).filter_by(user_id=user_id).all()
+    
+    def get_user_active_model(self, user_id: UUID) -> Optional[UserAIModel]:
+        """Get the first active AI model for a user"""
+        return (
+            self.db.query(UserAIModel)
+            .join(AIModel)
+            .filter(UserAIModel.user_id == user_id)
+            .filter(AIModel.is_active == True)
+            .first()
+        )

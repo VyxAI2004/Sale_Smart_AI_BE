@@ -7,8 +7,8 @@ from core.dependencies.services import get_auth_service
 from core.dependencies.auth import JWT_ALGORITHM, verify_token
 from core.dependencies.clerk import get_clerk_service
 from core.dependencies.db import get_db
-from services.sale_smart_ai_app.auth import JWT_SECRET_KEY, AuthService
-from services.sale_smart_ai_app.clerk import ClerkService
+from services.core.auth import JWT_SECRET_KEY, AuthService
+from services.core.clerk import ClerkService
 from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
@@ -51,7 +51,7 @@ def get_profile(
     auth_service: AuthService = Depends(get_auth_service),
 ):
     """Get the profile of the authenticated user."""
-    user = auth_service.repository.get_by_email(email=user_from_token.email)
+    user = auth_service.get_by_email(email=user_from_token.email)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return UserResponse.model_validate(user)

@@ -12,7 +12,7 @@ try:
     # Test imports
     print("Testing imports...")
     from middlewares.permissions import check_global_permissions, check_project_permissions
-    from services.sale_smart_ai_app.permission import PermissionService
+    from services.core.permission import PermissionService
     from shared.enums import GlobalPermissionEnum, ProjectPermissionEnum
     print("All imports successful")
     

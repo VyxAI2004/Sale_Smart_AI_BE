@@ -7,9 +7,18 @@ from .product_source import ProductSource
 from .crawl_session import CrawlSession
 from .task import Task, Subtask
 from .activity_log import ActivityLog
-from .product import Product, PriceHistory, PriceAnalysis, ProductComparison
+from .product import (
+    Product, 
+    PriceHistory, 
+    PriceAnalysis, 
+    ProductComparison,
+    ProductReview,
+    ReviewAnalysis,
+    ProductTrustScore,
+)
 from .attachment import Attachment
 from .comment import Comment
+from .user_ai_model import UserAIModel
 
 __all__ = [
     # Base
@@ -21,6 +30,7 @@ __all__ = [
     "Permission", 
     "UserRole",
     "RolePermission",
+    "UserAIModel",
     
     # AI Models
     "AIModel",
@@ -42,6 +52,11 @@ __all__ = [
     "PriceHistory", 
     "PriceAnalysis",
     "ProductComparison",
+    
+    # Trust Score Feature
+    "ProductReview",
+    "ReviewAnalysis",
+    "ProductTrustScore",
     
     # System
     "ActivityLog",

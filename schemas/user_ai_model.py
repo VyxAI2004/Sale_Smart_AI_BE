@@ -1,4 +1,5 @@
 from typing import Optional
+from datetime import datetime
 from pydantic import BaseModel, Field
 from uuid import UUID
 
@@ -17,8 +18,8 @@ class UserAIModelUpdate(BaseModel):
 class UserAIModelResponse(UserAIModelBase):
     id: UUID
     user_id: UUID
-    created_at: Optional[str]
-    updated_at: Optional[str]
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True

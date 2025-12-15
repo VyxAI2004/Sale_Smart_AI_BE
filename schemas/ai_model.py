@@ -40,7 +40,7 @@ class AIModelUpdate(BaseModel):
 class AIModelResponse(AIModelBase):
     """Schema for AI model response"""
     id: UUID
-    usage_count: int
+    usage_count: Optional[int] = 0
     last_used_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime

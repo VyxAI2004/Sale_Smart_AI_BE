@@ -7,9 +7,9 @@ sys.path.append(os.getcwd())
 os.environ['APP_ENV'] = 'dev'
 
 try:
-    from services.sale_smart_ai_app.permission import PermissionService
-    from services.sale_smart_ai_app.auth import AuthService
-    from services.sale_smart_ai_app.project import ProjectService
+    from services.core.permission import PermissionService
+    from services.core.auth import AuthService
+    from services.core.project import ProjectService
     from core.dependencies.auth import verify_token
     from schemas.auth import TokenData
 

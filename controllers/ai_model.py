@@ -1,4 +1,5 @@
 import uuid
+import logging
 from typing import Optional
 
 
@@ -12,12 +13,13 @@ from schemas.ai_model import (
     AIModelCreate,
     AIModelUpdate,
 )
-from services.sale_smart_ai_app.ai_model import AIModelService
+from services.core.ai_model import AIModelService
 from repositories.ai_model import AIModelFilters
 from middlewares.permissions import check_global_permissions
 from shared.enums import GlobalPermissionEnum, RoleEnum
 
 router = APIRouter(prefix="/ai-models", tags=["ai-models"])
+logger = logging.getLogger(__name__)
 
 
 
@@ -141,6 +143,7 @@ async def deactivate_ai_model(
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="AI model not found")
         return ai_model
     except Exception as e:
+        logger.error(f"Error activating AI model {ai_model_id}: {str(e)}", exc_info=True)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
@@ -158,6 +161,7 @@ async def activate_ai_model(
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="AI model not found")
         return ai_model
     except Exception as e:
+        logger.error(f"Error activating AI model {ai_model_id}: {str(e)}", exc_info=True)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
