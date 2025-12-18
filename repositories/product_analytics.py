@@ -48,3 +48,4 @@ class ProductAnalyticsRepository(BaseRepository[ProductAnalytics, ProductAnalyti
             return False
         self.delete(id=analytics.id)
         return True
+

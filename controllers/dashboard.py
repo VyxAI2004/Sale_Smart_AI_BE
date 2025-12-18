@@ -25,3 +25,4 @@ def get_dashboard_statistics(
     """
     stats = dashboard_service.get_statistics(user_from_token.user_id)
     return DashboardStatisticsResponse(**stats)
+

@@ -1,0 +1,28 @@
+
+app:
+  env: prod
+  host: 0.0.0.0
+  port: 8000
+  workers: 1
+  log_level: info
+
+database:
+  url: postgresql://sale_smart_ai:IBI1CabBzeyNqkEmeUnOOLUQBXrjNq5z@192.168.50.4:5433/sale_smart_ai
+
+redis:
+  url: redis://redis:6379/0
+
+security:
+  secret_key: "change-me-please"
+  allowed_hosts:
+    - "localhost"
+    - "0.0.0.0"
+
+sentry:
+  dsn: ""
+
+docker:
+  user: app
+  uid: 1000
+  gid: 1000
+

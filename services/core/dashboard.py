@@ -74,3 +74,4 @@ class DashboardService:
             "active_projects": active_projects,
             "average_trust_score": average_trust_score
         }
+

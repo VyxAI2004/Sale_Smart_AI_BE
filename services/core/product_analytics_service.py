@@ -95,3 +95,4 @@ class ProductAnalyticsCacheService(
     def delete_by_product(self, product_id: UUID) -> bool:
         """Xóa analytics cache của một product"""
         return self.repository.delete_by_product(product_id)
+

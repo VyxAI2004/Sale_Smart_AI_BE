@@ -53,3 +53,4 @@ def downgrade() -> None:
     
     # Drop table
     op.drop_table('product_analytics')
+
